@@ -96,15 +96,15 @@ NoteModel.getAll = (req, res) => {
     if (err) {
       console.log(err);
     } else {
-      console.log(results);
+      //console.log(results);
       const query = `SELECT stamp_id FROM bz_timestamp.t_stamp WHERE stamp_date= '${stampD}'`;
       connection.query(query, function (err, results) {
         if (err) {
           console.log(err);
         } else {
-          console.log(results);
+          //console.log(results);
           var numRows = results.length;
-          console.log(numRows);
+          //console.log(numRows);
           if (numRows > 0) {
             const query =
               "UPDATE bz_timestamp.t_stamp SET " +

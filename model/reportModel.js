@@ -3,7 +3,6 @@ const router = express.Router();
 const bodyParser = require("body-parser");
 router.use(bodyParser.json());
 const connection = require("../db/database");
-const async = require("async");
 
 const Report = function (report) {};
 

@@ -18,7 +18,7 @@ Login.getAll = (req, res) => {
     " p.id,p.NickName,p.Team,p.Office,p.Email,u.role_key" +
     " FROM bz_timestamp.t_admin_user u " +
     " LEFT JOIN baezenic_people.t_people p ON u.uid=p.id" +
-    " WHERE p.status<>'Y' AND  u.role_key =1" +
+    " WHERE p.status<>'Y' " +
     " AND p.Email='" +
     email +
     "' AND p.password='" +
@@ -35,7 +35,7 @@ Login.getAll = (req, res) => {
         const token = jwt.sign(
           { email: item.Email, id: item.id },
           process.env.ACCESS_TOKEN_SECRET,
-          { expiresIn: "1h", algorithm: "HS256" }
+          { expiresIn: "3d", algorithm: "HS256" }
         );
 
         return token;

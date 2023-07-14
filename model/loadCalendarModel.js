@@ -10,7 +10,7 @@ const GetWorkShift = function (getWorkShift) {};
 GetWorkShift.getAll = (req, res) => {
   var team = req.query.team;
   var workShiftId = req.query.workShiftId;
-  //console.log(team);
+  console.log(req.query);
   let query =
     "SELECT a.calendar_id, a.uid,if(a.uid='1234567890','Vietnam',b.NickName) as title," +
     " concat(a.calendar_date_start,' ',c.work_shift_start) as event_start, a.calendar_date_end as event_end," +
@@ -23,7 +23,7 @@ GetWorkShift.getAll = (req, res) => {
     team +
     "'";
 
-  if (workShiftId != "ALL") {
+  if (workShiftId != "All") {
     query += " AND a.work_shift_id='" + workShiftId + "'";
   }
   connection.query(query, (err, result) => {

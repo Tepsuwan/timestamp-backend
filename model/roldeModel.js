@@ -9,12 +9,16 @@ const Role = function (role) {};
 Role.getAll = (req, res) => {
   const query =
     "SELECT `role_id`, `role_name`, `role_key`" +
-    " FROM bz_timestamp.t_role WHERE 1";
+    " FROM bz_timestamp.t_role" +
+    //" LEFT JOIN bz_timestamp.t_role c ON c.role_key=a.role_key" +
+    " WHERE 1";
+
   connection.query(query, (err, result) => {
     if (err) {
       console.log(err);
     } else {
-      //console.log(result);
+      console.log(result);
+      console.log(query);
       res(null, result);
     }
   });

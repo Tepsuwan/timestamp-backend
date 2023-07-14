@@ -32,6 +32,7 @@ UserData.getAll = (req, res) => {
       //console.log(result);
       Object.keys(result).forEach(function (key) {
         var row = result[key];
+
         var data = {
           id: row.id,
           name: row.fname,

@@ -74,12 +74,12 @@ function update_late() {
         obj.stamp_id +
         "'";
 
-      //console.log(query);
       connection.query(query, function (err, result2) {
         if (err) {
           console.log(err);
         } else {
           let num_rows = result2.length;
+          //console.log(num_rows);
           let late_start = "";
           let late_stop = "";
           let late_work_shift_id = "";
@@ -87,6 +87,8 @@ function update_late() {
           if (num_rows > 0) {
             late_work_shift_id = result2[0].work_shift_id;
           }
+
+          //console.log("11111", obj);
           const query =
             "SELECT a.stamp_date,DATE_FORMAT(a.stamp_start,'%Y-%m-%d %H:%i:%s') as start," +
             " DATE_FORMAT(a.stamp_stop,'%Y-%m-%d %H:%i:%s') as stop,b.work_shift_start,b.work_shift_stop,b.work_shift_id" +
@@ -346,21 +348,21 @@ Start.getAll = (req, res) => {
   //   console.log(req.query.uid);
   var currentDate = new Date();
   var work_shift_id = "";
-  var note = "";
   var team = "";
   var calendar_mate_id = "";
   var workshiftId = "";
   var calendar_date_start = "";
   const { networkInterfaces } = require("os");
   var action = req.body.action;
-  var wsid = req.body.work_shift_id;
+  var wsid = req.body.wsid;
   var uid = req.body.uid;
+  var note = req.body.stamp_note;
+  var ipAddress = req.body.ipAddress;
 
-  console.log(uid);
-  console.log(action);
+  //console.log("body", req.body);
 
   const nets = networkInterfaces();
-  const results = Object.create(null); // Or just '{}', an empty object
+  const results = Object.create(null);
 
   for (const name of Object.keys(nets)) {
     for (const net of nets[name]) {
@@ -373,7 +375,7 @@ Start.getAll = (req, res) => {
       }
     }
   }
-  ipAddresses = results.Ethernet[0];
+  //ipAddresses = results.Ethernet[0];
   const weekday = [
     "Sunday",
     "Monday",
@@ -499,7 +501,7 @@ Start.getAll = (req, res) => {
         /* Extra day shift
           ------------------------------------------------------------------ */
         //var stamp_id = crypto.randomBytes(6).toString("hex");
-        const query = `SELECT stamp_id FROM bz_timestamp.t_stamp WHERE stamp_date= '${d}'`;
+        const query = `SELECT stamp_id FROM bz_timestamp.t_stamp WHERE stamp_date= '${d}'AND stamp_uid = '${uid}'`;
 
         connection.query(query, function (err, result) {
           if (err) {
@@ -511,26 +513,28 @@ Start.getAll = (req, res) => {
 
             if (num_rows > 0) {
               const query = `SELECT stamp_start FROM bz_timestamp.t_stamp WHERE stamp_date= '${d}'`;
-
+              //console.log(query);
               connection.query(query, function (err, result) {
                 if (err) {
                   console.log(err);
                 } else {
                   //console.log(result);
                   if (result[0].stamp_start === "0000-00-00 00:00:00") {
-                    const query = `SELECT stamp_id FROM bz_timestamp.t_stamp WHERE stamp_date= '${d}'`;
+                    const query = `SELECT stamp_id FROM bz_timestamp.t_stamp WHERE stamp_date= '${d}' `;
                     connection.query(query, function (err, result) {
                       if (err) {
                         console.log(err);
                       } else {
                         //console.log(result[0].stamp_id);
+                        //console.log(result);
+                        stamp_id = result[0].stamp_id;
                         const query =
                           "UPDATE bz_timestamp.t_stamp SET " +
                           "stamp_start='" +
                           CD +
                           "'," +
-                          "stamp_stop_ip='" +
-                          ipAddresses +
+                          "stamp_start_ip='" +
+                          ipAddress +
                           "'," +
                           "work_shift_id='" +
                           wsid +
@@ -542,7 +546,7 @@ Start.getAll = (req, res) => {
                           CD +
                           "'" +
                           " WHERE stamp_id='" +
-                          result[0].stamp_id +
+                          stamp_id +
                           "'";
 
                         connection.query(query, function (err, result) {
@@ -560,7 +564,8 @@ Start.getAll = (req, res) => {
                                 day: day,
                               };
                               //id_command = result[0].stamp_id;
-                              //update_late(action);
+                              console.log("3333", obj);
+                              //update_late(obj);
                               console.log("Update start success");
                               res(null, result);
                             } else {
@@ -575,13 +580,14 @@ Start.getAll = (req, res) => {
                     });
                   } else {
                     //update_late(action);
-                    console.log("Duplicate start !!");
+                    console.log("Duplicate start !!!");
                     res(null, "Duplicate start");
                     //res.json((msg = "Duplicate start"));
                   }
                 }
               });
             } else {
+              note = req.body.stamp_note;
               const query =
                 "INSERT INTO bz_timestamp.t_stamp(" +
                 "stamp_id, stamp_uid,work_shift_id, stamp_date, stamp_start,stamp_note," +
@@ -601,13 +607,14 @@ Start.getAll = (req, res) => {
                 note +
                 "'," +
                 "'" +
-                ipAddresses +
+                ipAddress +
                 "','" +
                 uid +
                 "','" +
                 CD +
                 "'" +
                 ")";
+              //console.log(query);
               connection.query(query, function (err, result) {
                 if (err) {
                   console.log(err);
@@ -620,11 +627,13 @@ Start.getAll = (req, res) => {
                       wsid: wsid,
                       dateNow: dateNow,
                       day: day,
+                      note: note,
                     };
+
                     update_late(obj);
                     //update_late(stamp_id);
                     //console.log(req.query.uid);
-                    console.log(obj);
+                    //console.log("obj", obj);
                     res(null, obj);
                   } else {
                     console.log(obj);

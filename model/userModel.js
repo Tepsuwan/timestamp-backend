@@ -9,7 +9,7 @@ const User = function (user) {};
 User.getAll = (req, res) => {
   const query =
     "SELECT @rownum := @rownum + 1 AS rownum," +
-    "a. admin_user_id as id,CONCAT(b.titlename,' ',b.Name,' ( ',b.NickName,' )') as name,c.role_name" +
+    " a. admin_user_id as id,CONCAT(b.titlename,' ',b.Name,' ( ',b.NickName,' )') as name,c.role_name,b. id as uid" +
     " FROM bz_timestamp.t_admin_user a " +
     " LEFT JOIN baezenic_people.t_people b ON b.id=a.uid" +
     " LEFT JOIN bz_timestamp.t_role c ON c.role_key=a.role_key" +
